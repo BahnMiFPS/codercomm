@@ -1,7 +1,7 @@
 import { Container } from "@mui/material"
 import React from "react"
 import { useLocation, useNavigate } from "react-router-dom"
-import LoginForm from "../components/form/LoginForm"
+import FormProvider from "../components/form/FormProvider"
 import useAuth from "../hooks/useAuth"
 
 function LoginPage() {
@@ -21,7 +21,7 @@ function LoginPage() {
 
 		try {
 			await auth.login({ email, password }, () => {
-				navigate(from, { replace: true })
+				navigate("/", { replace: true })
 			})
 		} catch (error) {
 			setErrors({ responseError: error.message })
@@ -31,7 +31,7 @@ function LoginPage() {
 	}
 	return (
 		<Container maxWidth="xs">
-			<LoginForm
+			<FormProvider
 				initialValues={initialValues}
 				onSubmit={onSubmit}
 				buttonText="Sign In"

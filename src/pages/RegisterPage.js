@@ -1,10 +1,10 @@
 import { Container } from "@mui/material"
 import React from "react"
 import { useLocation, useNavigate } from "react-router-dom"
-import LoginForm from "../components/form/LoginForm"
+import FormProvider from "../components/form/FormProvider"
 import useAuth from "../hooks/useAuth"
 
-function LoginPage() {
+function RegisterPage() {
 	let location = useLocation()
 	let navigate = useNavigate()
 
@@ -13,16 +13,16 @@ function LoginPage() {
 		name: "",
 		email: "",
 		password: "",
+		passwordConfirmation: "",
 		remember: true,
 	}
 
 	const onSubmit = async (values, { setErrors, setSubmitting }) => {
-		const from = location.state?.from?.pathname || "/"
 		let { name, email, password } = values
 
 		try {
 			await auth.register({ name, email, password }, () => {
-				navigate(from, { replace: true })
+				navigate("/", { replace: true })
 			})
 		} catch (error) {
 			setErrors({ responseError: error.message })
@@ -32,7 +32,7 @@ function LoginPage() {
 	}
 	return (
 		<Container maxWidth="xs">
-			<LoginForm
+			<FormProvider
 				initialValues={initialValues}
 				onSubmit={onSubmit}
 				buttonText="Register"
@@ -41,4 +41,4 @@ function LoginPage() {
 	)
 }
 
-export default LoginPage
+export default RegisterPage

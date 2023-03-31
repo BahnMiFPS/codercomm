@@ -8,20 +8,27 @@ import {
 	InputAdornment,
 	Stack,
 	TextField,
+	Link,
 } from "@mui/material"
 import { Visibility, VisibilityOff } from "@mui/icons-material"
 import { useFormik } from "formik"
 import * as Yup from "yup"
-import { Link } from "react-router-dom"
+import { Link as RouterLink } from "react-router-dom"
 import { LoadingButton } from "@mui/lab"
 
-const LoginForm = ({ initialValues, onSubmit, buttonText }) => {
+const FormProvider = ({ initialValues, onSubmit, buttonText }) => {
 	const [showPassword, setShowPassword] = useState(false)
 
 	const handleClickShowPassword = () => {
 		setShowPassword((show) => !show)
 	}
 
+	const [showPasswordConfirmation, setShowPasswordConfirmation] =
+		useState(false)
+
+	const handleClickShowPasswordConfirmation = () => {
+		setShowPasswordConfirmation((show) => !show)
+	}
 	const formik = useFormik({
 		initialValues,
 		validationSchema: Yup.object({
@@ -36,6 +43,12 @@ const LoginForm = ({ initialValues, onSubmit, buttonText }) => {
 				.min(1, "The password must be between 6 and 20 characters")
 				.max(20, "The password must be between 6 and 20 characters")
 				.required("Password is required"),
+			passwordConfirmation:
+				buttonText === "Register"
+					? Yup.string()
+							.required("Please retype your password.")
+							.oneOf([Yup.ref("password")], "Your passwords do not match.")
+					: Yup.string(),
 		}),
 		onSubmit: onSubmit,
 		validateOnChange: false,
@@ -56,7 +69,10 @@ const LoginForm = ({ initialValues, onSubmit, buttonText }) => {
 				{buttonText === "Register" ? (
 					<>
 						<Alert severity="info">
-							Already got an account? — <Link to={"/login"}>Login Instead</Link>
+							Already got an account? —{" "}
+							<Link to={"/login"} component={RouterLink}>
+								Login Instead
+							</Link>
 						</Alert>
 						<TextField
 							error={Boolean(formik.touched.name && formik.errors.name)}
@@ -74,7 +90,10 @@ const LoginForm = ({ initialValues, onSubmit, buttonText }) => {
 					</>
 				) : (
 					<Alert severity="info">
-						Don't have an account? — <Link to={"/register"}>Get Started</Link>
+						Don't have an account? —{" "}
+						<Link component={RouterLink} to={"/register"}>
+							Get Started
+						</Link>
 					</Alert>
 				)}
 				<TextField
@@ -117,6 +136,47 @@ const LoginForm = ({ initialValues, onSubmit, buttonText }) => {
 					id="password"
 					autoComplete="current-password"
 				/>
+				{buttonText === "Register" ? (
+					<TextField
+						error={Boolean(
+							formik.touched.passwordConfirmation &&
+								formik.errors.passwordConfirmation
+						)}
+						onBlur={formik.handleBlur}
+						onChange={formik.handleChange}
+						value={formik.values.passwordConfirmation}
+						helperText={
+							formik.touched.passwordConfirmation &&
+							formik.errors.passwordConfirmation
+						}
+						InputProps={{
+							endAdornment: (
+								<InputAdornment position="end">
+									<IconButton
+										aria-label="toggle password confirmation visibility"
+										onClick={handleClickShowPasswordConfirmation}
+										edge="end"
+									>
+										{showPasswordConfirmation ? (
+											<Visibility />
+										) : (
+											<VisibilityOff />
+										)}
+									</IconButton>
+								</InputAdornment>
+							),
+						}}
+						margin="normal"
+						fullWidth
+						name="passwordConfirmation"
+						label="Password Confirmation"
+						type={showPasswordConfirmation ? "text" : "password"}
+						id="passwordConfirmation"
+						autoComplete="current-password-confirmation"
+					/>
+				) : (
+					<></>
+				)}
 				<FormControlLabel
 					control={
 						<Checkbox
@@ -145,4 +205,4 @@ const LoginForm = ({ initialValues, onSubmit, buttonText }) => {
 	)
 }
 
-export default LoginForm
+export default FormProvider
