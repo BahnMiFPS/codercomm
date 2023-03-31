@@ -1,4 +1,4 @@
-import { ThemeProvider } from "@mui/material"
+import { CssBaseline, ThemeProvider } from "@mui/material"
 import React from "react"
 import { AuthProvider } from "./contexts/AuthContext"
 
@@ -10,6 +10,7 @@ function App() {
 		<>
 			<AuthProvider>
 				<ThemeProvider theme={theme}>
+					<CssBaseline />
 					<Router />
 				</ThemeProvider>
 			</AuthProvider>

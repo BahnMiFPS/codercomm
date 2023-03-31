@@ -24,7 +24,6 @@ function LoginPage() {
 				navigate(from, { replace: true })
 			})
 		} catch (error) {
-			console.log(error)
 			setErrors({ responseError: error.message })
 		} finally {
 			setSubmitting(false)

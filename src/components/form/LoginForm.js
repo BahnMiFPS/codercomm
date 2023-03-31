@@ -25,6 +25,10 @@ const LoginForm = ({ initialValues, onSubmit, buttonText }) => {
 	const formik = useFormik({
 		initialValues,
 		validationSchema: Yup.object({
+			name:
+				buttonText === "Register"
+					? Yup.string().required("Name is required")
+					: Yup.string(),
 			email: Yup.string()
 				.email("Email is invalid")
 				.required("Email address is required"),
@@ -48,16 +52,37 @@ const LoginForm = ({ initialValues, onSubmit, buttonText }) => {
 				{formik.errors.responseError && (
 					<Alert severity="error">{formik.errors.responseError}</Alert>
 				)}
-				<Alert severity="info">
-					Don't have an account? — <Link to={"/register"}>Get Started</Link>
-				</Alert>
+
+				{buttonText === "Register" ? (
+					<>
+						<Alert severity="info">
+							Already got an account? — <Link to={"/login"}>Login Instead</Link>
+						</Alert>
+						<TextField
+							error={Boolean(formik.touched.name && formik.errors.name)}
+							onBlur={formik.handleBlur}
+							onChange={formik.handleChange}
+							value={formik.values.name}
+							helperText={formik.touched.name && formik.errors.name}
+							margin="normal"
+							fullWidth
+							id="name"
+							label="Name"
+							name="name"
+							autoComplete="off"
+						/>
+					</>
+				) : (
+					<Alert severity="info">
+						Don't have an account? — <Link to={"/register"}>Get Started</Link>
+					</Alert>
+				)}
 				<TextField
 					error={Boolean(formik.touched.email && formik.errors.email)}
 					onBlur={formik.handleBlur}
 					onChange={formik.handleChange}
 					value={formik.values.email}
 					helperText={formik.touched.email && formik.errors.email}
-					variant="standard"
 					margin="normal"
 					fullWidth
 					id="email"
@@ -84,7 +109,6 @@ const LoginForm = ({ initialValues, onSubmit, buttonText }) => {
 							</InputAdornment>
 						),
 					}}
-					variant="standard"
 					margin="normal"
 					fullWidth
 					name="password"

@@ -4,28 +4,28 @@ import { useLocation, useNavigate } from "react-router-dom"
 import LoginForm from "../components/form/LoginForm"
 import useAuth from "../hooks/useAuth"
 
-function RegisterPage() {
+function LoginPage() {
 	let location = useLocation()
 	let navigate = useNavigate()
-	let from = location.state?.from?.pathname || "/"
 
 	let auth = useAuth()
-
 	const initialValues = {
+		name: "",
 		email: "",
 		password: "",
 		remember: true,
 	}
 
 	const onSubmit = async (values, { setErrors, setSubmitting }) => {
+		const from = location.state?.from?.pathname || "/"
+		let { name, email, password } = values
+
 		try {
-			let { email, password } = values
-			await auth.login({ email, password }, () => {
+			await auth.register({ name, email, password }, () => {
 				navigate(from, { replace: true })
 			})
 		} catch (error) {
-			console.log(error)
-			setErrors({ responseError: error.response.data.errors.message })
+			setErrors({ responseError: error.message })
 		} finally {
 			setSubmitting(false)
 		}
@@ -35,10 +35,10 @@ function RegisterPage() {
 			<LoginForm
 				initialValues={initialValues}
 				onSubmit={onSubmit}
-				buttonText="Sign In"
+				buttonText="Register"
 			/>
 		</Container>
 	)
 }
 
-export default RegisterPage
+export default LoginPage

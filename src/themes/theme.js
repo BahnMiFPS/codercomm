@@ -1,23 +1,24 @@
 // src/theme.js
-
 import { createTheme } from "@mui/material"
 
 const theme = createTheme({
 	palette: {
 		mode: "dark",
 		primary: {
-			main: "#1DA1F2",
+			main: "#ff4444",
+			contrastText: "#fff",
 		},
 		secondary: {
-			main: "#8E8E8E",
+			main: "#fca311",
+			contrastText: "#fff",
 		},
 		background: {
-			paper: "#15202B",
-			default: "#0D1418",
+			default: "#121212",
+			paper: "#1e1e1e",
 		},
 		text: {
-			primary: "#D9D9D9",
-			secondary: "#8E8E8E",
+			primary: "#fff",
+			secondary: "#a0a0a0",
 		},
 	},
 })

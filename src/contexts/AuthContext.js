@@ -19,12 +19,20 @@ function setSession(accessToken) {
 		delete apiService.defaults.headers.common.Authorization
 	}
 }
-function reducer(state, action) {
+const reducer = (state, action) => {
 	switch (action.type) {
 		case LOGIN_SUCCESS:
-			return { ...state, isAuthenticated: true, user: action.payload.user }
+			return {
+				...state,
+				isAuthenticated: true,
+				user: action.payload.user,
+			}
 		case REGISTER_SUCCESS:
-			return { ...state, isAuthenticated: true, user: action.payload.user }
+			return {
+				...state,
+				isAuthenticated: true,
+				user: action.payload.user,
+			}
 		default:
 			return state
 	}
@@ -32,7 +40,7 @@ function reducer(state, action) {
 const AuthContext = createContext({ ...initialState })
 
 function AuthProvider({ children }) {
-	const { state, dispatch } = useReducer(reducer, initialState)
+	const [state, dispatch] = useReducer(reducer, initialState)
 
 	const login = async ({ email, password }, callback) => {
 		const response = await apiService.post("/auth/login", { email, password })
@@ -47,10 +55,11 @@ function AuthProvider({ children }) {
 		callback()
 	}
 
-	const signup = async ({ name, email, password }, callback) => {
+	const register = async ({ name, email, password }, callback) => {
 		const response = await apiService.post("/users", { name, email, password })
 		const { user, accessToken } = response.data
 		setSession(accessToken)
+
 		dispatch({
 			type: REGISTER_SUCCESS,
 			payload: { user },
@@ -64,6 +73,8 @@ function AuthProvider({ children }) {
 			value={{
 				...state,
 				login,
+				dispatch,
+				register,
 			}}
 		>
 			{children}

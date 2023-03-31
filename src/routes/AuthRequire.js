@@ -6,11 +6,11 @@ import useAuth from "../hooks/useAuth"
 function AuthRequire({ children }) {
 	const { isInitialized, isAuthenticated } = useAuth()
 	const location = useLocation()
-	let from = location.state?.from?.pathname || "/"
 
 	if (!isAuthenticated) {
 		return <Navigate to="/login" state={{ from: location }} replace />
 	}
+
 	return children
 }
 
