@@ -10,8 +10,8 @@ function LoginPage() {
 
 	let auth = useAuth()
 	const initialValues = {
-		email: "",
-		password: "",
+		email: "luongquangvu97@gmail.com",
+		password: "123",
 		remember: true,
 	}
 
@@ -21,12 +21,11 @@ function LoginPage() {
 
 		try {
 			await auth.login({ email, password }, () => {
-				navigate("/", { replace: true })
+				navigate(from, { replace: true })
 			})
+			setSubmitting(false)
 		} catch (error) {
 			setErrors({ responseError: error.message })
-		} finally {
-			setSubmitting(false)
 		}
 	}
 	return (

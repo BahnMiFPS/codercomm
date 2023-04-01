@@ -10,20 +10,11 @@ const initialState = {
 const LOGIN_SUCCESS = "AUTH.LOGIN_SUCCESS"
 const REGISTER_SUCCESS = "AUTH.REGISTER_SUCCESS"
 const LOGOUT = "AUTH.LOGOUT"
-const INITIALIZED = "AUTH.INITIALIZED"
+const INITIALIZE = "AUTH.INITIALIZE"
 
-function setSession(accessToken) {
-	if (accessToken) {
-		window.localStorage.setItem("accessToken", accessToken)
-		apiService.defaults.headers.common.Authorization = `Bearer ${accessToken}`
-	} else {
-		window.localStorage.removeItem("accessToken")
-		delete apiService.defaults.headers.common.Authorization
-	}
-}
 const reducer = (state, action) => {
 	switch (action.type) {
-		case INITIALIZED:
+		case INITIALIZE:
 			const { isAuthenticated, user } = action.payload
 			return {
 				...state,
@@ -43,7 +34,6 @@ const reducer = (state, action) => {
 				isAuthenticated: true,
 				user: action.payload.user,
 			}
-
 		case LOGOUT:
 			return {
 				...state,
@@ -54,13 +44,22 @@ const reducer = (state, action) => {
 			return state
 	}
 }
+
+function setSession(accessToken) {
+	if (accessToken) {
+		window.localStorage.setItem("accessToken", accessToken)
+		apiService.defaults.headers.common.Authorization = `Bearer ${accessToken}`
+	} else {
+		window.localStorage.removeItem("accessToken")
+		delete apiService.defaults.headers.common.Authorization
+	}
+}
 const AuthContext = createContext({ ...initialState })
 
 function AuthProvider({ children }) {
 	const [state, dispatch] = useReducer(reducer, initialState)
-
 	useEffect(() => {
-		async function init() {
+		const initialize = async () => {
 			try {
 				const accessToken = window.localStorage.getItem("accessToken")
 
@@ -71,35 +70,38 @@ function AuthProvider({ children }) {
 					const user = response.data
 
 					dispatch({
-						type: INITIALIZED,
+						type: INITIALIZE,
 						payload: { isAuthenticated: true, user },
 					})
 				} else {
 					setSession(null)
 
 					dispatch({
-						type: INITIALIZED,
+						type: INITIALIZE,
 						payload: { isAuthenticated: false, user: null },
 					})
 				}
-			} catch (error) {
-				console.log(error)
+			} catch (err) {
+				console.error(err)
 
 				setSession(null)
 				dispatch({
-					type: INITIALIZED,
-					payload: { isAuthenticated: false, user: null },
+					type: INITIALIZE,
+					payload: {
+						isAuthenticated: false,
+						user: null,
+					},
 				})
 			}
 		}
 
-		init()
+		initialize()
 	}, [])
 
 	const login = async ({ email, password }, callback) => {
 		const response = await apiService.post("/auth/login", { email, password })
-		const { user, accessToken } = response.data
-
+		const user = response.data.user
+		const accessToken = response.data.data.accessToken
 		setSession(accessToken)
 		dispatch({
 			type: LOGIN_SUCCESS,
@@ -111,7 +113,8 @@ function AuthProvider({ children }) {
 
 	const register = async ({ name, email, password }, callback) => {
 		const response = await apiService.post("/users", { name, email, password })
-		const { user, accessToken } = response.data
+		const user = response.data.user
+		const accessToken = response.data.data.accessToken
 		setSession(accessToken)
 
 		dispatch({

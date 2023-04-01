@@ -20,7 +20,7 @@ const router = createBrowserRouter([
 		),
 		children: [
 			{
-				path: "",
+				index: true,
 				element: <HomePage />,
 			},
 			{
@@ -38,16 +38,16 @@ const router = createBrowserRouter([
 		element: <BlankLayout />,
 		children: [
 			{
-				path: "*",
-				element: <NotFoundPage />,
-			},
-			{
 				path: "login",
 				element: <LoginPage />,
 			},
 			{
 				path: "register",
 				element: <RegisterPage />,
+			},
+			{
+				path: "*",
+				element: <NotFoundPage />,
 			},
 		],
 	},
