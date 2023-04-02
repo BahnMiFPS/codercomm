@@ -23,6 +23,7 @@ const reducer = (state, action) => {
 				user,
 			}
 		case LOGIN_SUCCESS:
+			console.log(state)
 			return {
 				...state,
 				isAuthenticated: true,
@@ -138,8 +139,8 @@ function AuthProvider({ children }) {
 			value={{
 				...state,
 				login,
-				logout,
 				register,
+				logout,
 			}}
 		>
 			{children}

@@ -1,6 +1,5 @@
-import { replace } from "lodash"
-import React, { useEffect } from "react"
-import { Navigate, useLocation, useNavigate } from "react-router-dom"
+import React from "react"
+import { Navigate, useLocation } from "react-router-dom"
 import LoadingScreen from "../components/LoadingScreen"
 import useAuth from "../hooks/useAuth"
 

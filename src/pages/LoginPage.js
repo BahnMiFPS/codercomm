@@ -14,14 +14,14 @@ function LoginPage() {
 		remember: true,
 	}
 
-	const onSubmit = async (values, { setErrors, setSubmitting }) => {
+	const onSubmit = async (data, { setErrors, setSubmitting }) => {
 		const from = location.state?.from?.pathname || "/"
 		console.log(from)
-		let { email, password } = values
+		let { email, password } = data
 
 		try {
 			await auth.login({ email, password }, () => {
-				navigate(from, { replace: true })
+				navigate("/", { replace: true })
 			})
 			setSubmitting(false)
 		} catch (error) {
