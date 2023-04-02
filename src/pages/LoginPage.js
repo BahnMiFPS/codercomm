@@ -1,13 +1,12 @@
 import { Container } from "@mui/material"
 import React from "react"
-import { useLocation, useNavigate } from "react-router-dom"
+import { Navigate, useLocation, useNavigate } from "react-router-dom"
 import FormProvider from "../components/form/FormProvider"
 import useAuth from "../hooks/useAuth"
 
 function LoginPage() {
 	let location = useLocation()
-	let navigate = useNavigate()
-
+	const navigate = useNavigate()
 	let auth = useAuth()
 	const initialValues = {
 		email: "luongquangvu97@gmail.com",
@@ -17,6 +16,7 @@ function LoginPage() {
 
 	const onSubmit = async (values, { setErrors, setSubmitting }) => {
 		const from = location.state?.from?.pathname || "/"
+		console.log(from)
 		let { email, password } = values
 
 		try {
@@ -26,6 +26,7 @@ function LoginPage() {
 			setSubmitting(false)
 		} catch (error) {
 			setErrors({ responseError: error.message })
+			setSubmitting(false)
 		}
 	}
 	return (

@@ -100,14 +100,13 @@ function AuthProvider({ children }) {
 
 	const login = async ({ email, password }, callback) => {
 		const response = await apiService.post("/auth/login", { email, password })
-		const user = response.data.user
+		const user = response.data.data.user
 		const accessToken = response.data.data.accessToken
 		setSession(accessToken)
 		dispatch({
 			type: LOGIN_SUCCESS,
 			payload: { user },
 		})
-
 		callback()
 	}
 

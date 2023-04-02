@@ -14,24 +14,25 @@ import Menu from "@mui/material/Menu"
 import useAuth from "../hooks/useAuth"
 import Logo from "../components/Logo"
 import { Link as RouterLink } from "react-router-dom"
-import { Avatar, Link } from "@mui/material"
+import { Avatar, Divider, Link } from "@mui/material"
 function MainHeader() {
 	const { user, logout } = useAuth()
+	console.log(user)
 	const [anchorEl, setAnchorEl] = React.useState(null)
-
-	const handleMenu = (event) => {
+	const isMenuOpen = Boolean(anchorEl)
+	const handleProfileMenuOpen = (event) => {
 		setAnchorEl(event.currentTarget)
 	}
 
-	const handleClose = () => {
+	const handleMenuClose = () => {
 		setAnchorEl(null)
 	}
 	const handleLogout = () => {
 		logout(() => {})
-		handleClose()
+		handleMenuClose()
 	}
 	return (
-		<Box sx={{ flexGrow: 1 }}>
+		<Box sx={{ mb: 3 }}>
 			<AppBar position="static">
 				<Toolbar>
 					<IconButton
@@ -39,29 +40,35 @@ function MainHeader() {
 						edge="start"
 						color="inherit"
 						aria-label="logo"
-						sx={{ mr: 2 }}
+						sx={{
+							mr: 2,
+							"&:hover": {
+								background: "none",
+							},
+						}}
 						component={RouterLink}
 						to={"/"}
 					>
 						<Logo />
 					</IconButton>
 					<Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-						Photos
+						CoderComm
 					</Typography>
-					<div>
+					<Box>
 						<IconButton
 							size="large"
 							aria-label="account of current user"
 							aria-controls="menu-appbar"
 							aria-haspopup="true"
-							onClick={handleMenu}
+							onClick={handleProfileMenuOpen}
 							color="inherit"
+							sx={{
+								"&:hover": {
+									background: "none",
+								},
+							}}
 						>
-							{user.data.avatarUrl ? (
-								<Avatar src={user.data.avatarUrl} />
-							) : (
-								<AccountCircle />
-							)}
+							<Avatar src={user.avatarUrl} alt={user.name} />
 						</IconButton>
 						<Menu
 							id="menu-appbar"
@@ -76,13 +83,20 @@ function MainHeader() {
 								horizontal: "right",
 							}}
 							open={Boolean(anchorEl)}
-							onClose={handleClose}
+							onClose={handleMenuClose}
 						>
-							<MenuItem onClick={handleClose}>Profile</MenuItem>
-							<MenuItem onClick={handleClose}>My account</MenuItem>
+							<Typography variant="subtitle2" noWrap>
+								{user?.name}
+							</Typography>
+							<Typography variant="body2" noWrap>
+								{user?.email}
+							</Typography>
+							<Divider />
+							<MenuItem onClick={handleMenuClose}>Profile</MenuItem>
+							<MenuItem onClick={handleMenuClose}>My account</MenuItem>
 							<MenuItem onClick={handleLogout}>Logout</MenuItem>
 						</Menu>
-					</div>
+					</Box>
 				</Toolbar>
 			</AppBar>
 		</Box>
