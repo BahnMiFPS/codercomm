@@ -10,25 +10,16 @@ import FriendList from "../features/friend/FriendList"
 import FriendRequests from "../features/friend/FriendRequests"
 import AddFriend from "../features/friend/AddFriend"
 import useAuth from "../hooks/useAuth"
-import {
-	Avatar,
-	Box,
-	Card,
-	CardActions,
-	CardContent,
-	CardMedia,
-	Container,
-	Tab,
-	Tabs,
-	useTheme,
-} from "@mui/material"
+import { capitalCase } from "change-case"
+
+import { Box, Card, Container, Tab, Tabs, styled } from "@mui/material"
+import ProfileCover from "../features/user/ProfileCover"
 function HomePage() {
 	const { user } = useAuth()
-	console.log(user)
 
-	const [activeTabs, setActiveTabs] = useState(0)
-	const handleTabChange = (e, tab) => {
-		setActiveTabs(tab)
+	const [currentTab, setCurrentTab] = useState("profile")
+	const handleChangeTab = (newValue) => {
+		setCurrentTab(newValue)
 	}
 	const PROFILE_TABS = [
 		{
@@ -52,61 +43,57 @@ function HomePage() {
 			component: <AddFriend />,
 		},
 	]
-	const theme = useTheme()
 
-	const cardContainerStyle = {
+	const TabsWrapperStyle = styled("div")(({ theme }) => ({
+		zIndex: 9,
+		bottom: 0,
+		width: "100%",
 		display: "flex",
-		flexDirection: "column",
-		[theme.breakpoints.down("xl")]: {
-			backgroundColor: "red",
+		position: "absolute",
+		[theme.breakpoints.up("sm")]: {
+			justifyContent: "center",
 		},
-	}
-
-	const cardActionsStyle = {
-		display: "flex",
-		justifyContent: "flex-end",
-		[theme.breakpoints.down("xl")]: {
-			backgroundColor: "blue",
+		[theme.breakpoints.up("md")]: {
+			justifyContent: "flex-end",
+			paddingRight: theme.spacing(3),
 		},
-	}
+	}))
 	return (
 		<Container>
-			<Card style={cardContainerStyle}>
-				<Box position={"relative"}>
-					<CardMedia
-						component="img"
-						alt="green iguana"
-						height={"300px"}
-						image="https://i.imgur.com/Zxlr4t1.png"
-					/>
-					<Box position={"absolute"}>
-						<Avatar
-							sx={{
-								top: "-90px",
-								left: "50px",
-								width: "120px",
-								height: "120px",
-							}}
-							alt="Remy Sharp"
-							src={user?.avatarURL}
-						/>
-					</Box>
-				</Box>
+			<Card
+				sx={{
+					mb: 3,
+					height: 280,
+					position: "relative",
+				}}
+			>
+				<ProfileCover user={user} />
 
-				<CardActions style={cardActionsStyle}>
-					<Tabs value={activeTabs} onChange={handleTabChange}>
+				<TabsWrapperStyle>
+					<Tabs
+						value={currentTab}
+						scrollButtons="auto"
+						variant="scrollable"
+						allowScrollButtonsMobile
+						onChange={(e, value) => handleChangeTab(value)}
+					>
 						{PROFILE_TABS.map((tab) => (
 							<Tab
-								label={tab.value}
-								key={tab.value}
-								icon={tab.icon}
 								disableRipple
+								key={tab.value}
+								value={tab.value}
+								icon={tab.icon}
+								label={capitalCase(tab.value)}
 							/>
 						))}
 					</Tabs>
-				</CardActions>
+				</TabsWrapperStyle>
 			</Card>
-			{PROFILE_TABS[activeTabs]?.component}
+
+			{PROFILE_TABS.map((tab) => {
+				const isMatched = tab.value === currentTab
+				return isMatched && <Box key={tab.value}>{tab.component}</Box>
+			})}
 		</Container>
 	)
 }
