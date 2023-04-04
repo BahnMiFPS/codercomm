@@ -4,18 +4,17 @@ import { useLocation, useNavigate } from "react-router-dom"
 import FormProvider from "../components/form/FormProvider"
 import useAuth from "../hooks/useAuth"
 
+const initialValues = {
+	name: "",
+	email: "",
+	password: "",
+	passwordConfirmation: "",
+	remember: true,
+}
 function RegisterPage() {
-	let location = useLocation()
 	let navigate = useNavigate()
 
-	let auth = useAuth()
-	const initialValues = {
-		name: "",
-		email: "",
-		password: "",
-		passwordConfirmation: "",
-		remember: true,
-	}
+	const auth = useAuth()
 
 	const onSubmit = async (values, { setErrors, setSubmitting }) => {
 		let { name, email, password } = values

@@ -20,10 +20,10 @@ const reducer = (state, action) => {
 				...state,
 				isInitialized: true,
 				isAuthenticated,
-				user,
+				user: user,
 			}
 		case LOGIN_SUCCESS:
-			console.log(state)
+			console.log("login_success", action.payload.user)
 			return {
 				...state,
 				isAuthenticated: true,
@@ -59,6 +59,7 @@ const AuthContext = createContext({ ...initialState })
 
 function AuthProvider({ children }) {
 	const [state, dispatch] = useReducer(reducer, initialState)
+
 	useEffect(() => {
 		const initialize = async () => {
 			try {
@@ -68,8 +69,8 @@ function AuthProvider({ children }) {
 					setSession(accessToken)
 
 					const response = await apiService.get("/users/me")
-					const user = response.data
-
+					const user = response.data.data
+					console.log("initialize", user)
 					dispatch({
 						type: INITIALIZE,
 						payload: { isAuthenticated: true, user },
@@ -83,8 +84,6 @@ function AuthProvider({ children }) {
 					})
 				}
 			} catch (err) {
-				console.error(err)
-
 				setSession(null)
 				dispatch({
 					type: INITIALIZE,
@@ -101,8 +100,8 @@ function AuthProvider({ children }) {
 
 	const login = async ({ email, password }, callback) => {
 		const response = await apiService.post("/auth/login", { email, password })
-		const user = response.data.data.user
-		const accessToken = response.data.data.accessToken
+		const { user, accessToken } = response.data.data
+
 		setSession(accessToken)
 		dispatch({
 			type: LOGIN_SUCCESS,
@@ -113,8 +112,7 @@ function AuthProvider({ children }) {
 
 	const register = async ({ name, email, password }, callback) => {
 		const response = await apiService.post("/users", { name, email, password })
-		const user = response.data.user
-		const accessToken = response.data.data.accessToken
+		const { user, accessToken } = response.data
 		setSession(accessToken)
 
 		dispatch({
@@ -125,7 +123,7 @@ function AuthProvider({ children }) {
 		callback()
 	}
 
-	const logout = async (callback) => {
+	const logout = (callback) => {
 		setSession(null)
 
 		dispatch({

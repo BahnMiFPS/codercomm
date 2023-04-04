@@ -13,11 +13,14 @@ import MenuItem from "@mui/material/MenuItem"
 import Menu from "@mui/material/Menu"
 import useAuth from "../hooks/useAuth"
 import Logo from "../components/Logo"
-import { Link as RouterLink } from "react-router-dom"
+import { Link as RouterLink, useNavigate } from "react-router-dom"
 import { Avatar, Divider, Link } from "@mui/material"
+
+const disableButtonStyle = { pointerEvents: "none", cursor: "default" }
+
 function MainHeader() {
 	const { user, logout } = useAuth()
-	console.log(user)
+	const navigate = useNavigate()
 	const [anchorEl, setAnchorEl] = React.useState(null)
 	const isMenuOpen = Boolean(anchorEl)
 	const handleProfileMenuOpen = (event) => {
@@ -27,9 +30,15 @@ function MainHeader() {
 	const handleMenuClose = () => {
 		setAnchorEl(null)
 	}
-	const handleLogout = () => {
-		logout(() => {})
-		handleMenuClose()
+	const handleLogout = async () => {
+		try {
+			handleMenuClose()
+			await logout(() => {
+				navigate("/login")
+			})
+		} catch (error) {
+			console.log(error)
+		}
 	}
 	return (
 		<Box sx={{ mb: 3 }}>
@@ -68,7 +77,7 @@ function MainHeader() {
 								},
 							}}
 						>
-							<Avatar src={user.avatarUrl} alt={user.name} />
+							<Avatar src={user?.avatarUrl} alt={user?.name} />
 						</IconButton>
 						<Menu
 							id="menu-appbar"
@@ -85,15 +94,25 @@ function MainHeader() {
 							open={Boolean(anchorEl)}
 							onClose={handleMenuClose}
 						>
-							<Typography variant="subtitle2" noWrap>
-								{user?.name}
-							</Typography>
-							<Typography variant="body2" noWrap>
-								{user?.email}
-							</Typography>
+							<MenuItem style={disableButtonStyle}>
+								<Typography variant="subtitle2" noWrap>
+									{user?.name}
+								</Typography>
+							</MenuItem>
+							<MenuItem style={disableButtonStyle}>
+								<Typography variant="body2" noWrap>
+									{user?.email}
+								</Typography>
+							</MenuItem>
 							<Divider />
 							<MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-							<MenuItem onClick={handleMenuClose}>My account</MenuItem>
+							<MenuItem
+								onClick={handleMenuClose}
+								component={RouterLink}
+								to="/account"
+							>
+								My account
+							</MenuItem>
 							<MenuItem onClick={handleLogout}>Logout</MenuItem>
 						</Menu>
 					</Box>
