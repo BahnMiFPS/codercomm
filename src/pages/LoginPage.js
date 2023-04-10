@@ -20,9 +20,7 @@ function LoginPage() {
 		let { email, password } = data
 
 		try {
-			await auth.login({ email, password }, () => {
-				navigate(from, { replace: true })
-			})
+			await auth.login({ email, password })
 			setSubmitting(false)
 		} catch (error) {
 			setErrors({ responseError: error.message })

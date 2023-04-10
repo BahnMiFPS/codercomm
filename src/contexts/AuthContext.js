@@ -107,7 +107,6 @@ function AuthProvider({ children }) {
 			type: LOGIN_SUCCESS,
 			payload: { user },
 		})
-		callback()
 	}
 
 	const register = async ({ name, email, password }, callback) => {
