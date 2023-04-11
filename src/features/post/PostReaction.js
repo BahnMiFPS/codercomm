@@ -2,15 +2,15 @@ import { IconButton, Stack, Typography } from "@mui/material"
 
 import React from "react"
 import { useDispatch } from "react-redux"
-import { sendPostReaction } from "./postSlice"
 import { ThumbDownAltRounded, ThumbUpRounded } from "@mui/icons-material"
+import { sendPostReaction } from "./postSlice"
 
 function PostReaction({ post }) {
 	const dispatch = useDispatch()
 
 	const handleClick = (emoji) => {
 		console.log(emoji)
-		// dispatch(sendPostReaction({ postId: post._id, emoji }))
+		dispatch(sendPostReaction({ postId: post._id, emoji }))
 	}
 
 	return (
