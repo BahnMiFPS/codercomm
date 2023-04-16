@@ -1,87 +1,101 @@
-import { Box, Card, Stack, TextField } from "@mui/material"
-import React from "react"
-import * as Yup from "yup"
-import { useFormik } from "formik"
-import { LoadingButton } from "@mui/lab"
-import { createPost } from "./postSlice"
+import React, { useCallback } from "react"
+import { Box, Card, alpha, Stack } from "@mui/material"
+
+import { FormProvider, FTextField, FUploadImage } from "../../components/form"
 import { useDispatch, useSelector } from "react-redux"
+import { useForm } from "react-hook-form"
+import { yupResolver } from "@hookform/resolvers/yup"
+import * as Yup from "yup"
+import { createPost } from "./postSlice"
+import { LoadingButton } from "@mui/lab"
+
+const yupSchema = Yup.object().shape({
+	content: Yup.string().required("Content is required"),
+})
+
+const defaultValues = {
+	content: "",
+	image: null,
+}
 
 function PostForm() {
-	const dispatch = useDispatch()
-	const initialValues = {
-		content: "",
-		image: "",
-	}
-	const { isLoading, error } = useSelector((state) => state.post)
-	const formik = useFormik({
-		initialValues,
-		validationSchema: Yup.object({
-			content: Yup.string().required("Put some shit in here yo"),
-		}),
-		onSubmit: (data, { setSubmitting, resetForm, setErrors }) => {
-			dispatch(createPost(data))
-				.then(() => {
-					resetForm()
-				})
-				.catch((error) => {
-					setErrors(error)
-				})
-		},
-		validateOnChange: false,
-		validateOnBlur: false,
+	const { isLoading } = useSelector((state) => state.post)
+
+	const methods = useForm({
+		resolver: yupResolver(yupSchema),
+		defaultValues,
 	})
+	const {
+		handleSubmit,
+		reset,
+		setValue,
+		formState: { isSubmitting },
+	} = methods
+	const dispatch = useDispatch()
+
+	const handleDrop = useCallback(
+		(acceptedFiles) => {
+			const file = acceptedFiles[0]
+
+			if (file) {
+				setValue(
+					"image",
+					Object.assign(file, {
+						preview: URL.createObjectURL(file),
+					})
+				)
+			}
+		},
+		[setValue]
+	)
+
+	const onSubmit = (data) => {
+		dispatch(createPost(data)).then(() => reset())
+	}
 
 	return (
-		<Card sx={{ p: 3 }} component={"form"} onSubmit={formik.handleSubmit}>
-			<Stack spacing={2}>
-				<TextField
-					placeholder="Share what you are thinking here..."
-					error={Boolean(formik.touched.content && formik.errors.content)}
-					onBlur={formik.handleBlur}
-					onChange={formik.handleChange}
-					value={formik.values.content}
-					helperText={formik.touched.content && formik.errors.content}
-					margin="normal"
-					fullWidth
-					variant="outlined"
-					multiline
-					rows={4}
-					id="content"
-					name="content"
-					autoComplete="off"
-				/>
-				<TextField
-					placeholder="Image URL here"
-					error={Boolean(formik.touched.image && formik.errors.image)}
-					onBlur={formik.handleBlur}
-					onChange={formik.handleChange}
-					value={formik.values.image}
-					helperText={formik.touched.image && formik.errors.image}
-					variant="outlined"
-					margin="normal"
-					fullWidth
-					id="image"
-					name="image"
-					autoComplete="off"
-				/>
+		<Card sx={{ p: 3 }}>
+			<FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
+				<Stack spacing={2}>
+					<FTextField
+						name="content"
+						multiline
+						fullWidth
+						rows={4}
+						placeholder="Share what you are thinking here..."
+						sx={{
+							"& fieldset": {
+								borderWidth: `1px !important`,
+								borderColor: alpha("#919EAB", 0.32),
+							},
+						}}
+					/>
 
-				<Box
-					sx={{
-						display: "flex",
-						alignItems: "center",
-						justifyContent: "flex-end",
-					}}
-				>
-					<LoadingButton
-						type="submit"
-						variant="contained"
-						color="primary"
-						loading={formik.isSubmitting || isLoading}
+					<FUploadImage
+						name="image"
+						accept="image/*"
+						maxSize={3145728}
+						onDrop={handleDrop}
+					/>
+
+					<Box
+						sx={{
+							display: "flex",
+							alignItems: "center",
+							justifyContent: "flex-end",
+						}}
 					>
-						Post
-					</LoadingButton>
-				</Box>
-			</Stack>
+						<LoadingButton
+							type="submit"
+							variant="contained"
+							size="small"
+							loading={isSubmitting || isLoading}
+						>
+							Post
+						</LoadingButton>
+					</Box>
+				</Stack>
+			</FormProvider>
 		</Card>
 	)
 }

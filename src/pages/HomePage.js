@@ -67,7 +67,7 @@ function HomePage() {
 					position: "relative",
 				}}
 			>
-				<ProfileCover user={user} />
+				<ProfileCover profile={user} />
 
 				<TabsWrapperStyle>
 					<Tabs

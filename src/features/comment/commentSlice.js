@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit"
 import apiService from "../../app/apiService"
 import { COMMENTS_PER_POST } from "../../app/config"
+import { toast } from "react-toastify"
 
 const initialState = {
 	isLoading: false,
@@ -60,6 +61,7 @@ export const createComment =
 			dispatch(getComments({ postId }))
 		} catch (error) {
 			dispatch(slice.actions.hasErrors(error.message))
+			toast.error(error.message)
 		}
 	}
 
@@ -80,6 +82,7 @@ export const getComments =
 			)
 		} catch (error) {
 			dispatch(slice.actions.hasErrors(error.message))
+			toast.error(error.message)
 		}
 	}
 
@@ -100,6 +103,7 @@ export const sendCommentReaction =
 			)
 		} catch (error) {
 			dispatch(slice.actions.hasErrors(error.message))
+			toast.error(error.message)
 		}
 	}
 export default slice.reducer
