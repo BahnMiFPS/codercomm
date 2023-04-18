@@ -24,7 +24,6 @@ const reducer = (state, action) => {
 				user: user,
 			}
 		case LOGIN_SUCCESS:
-			console.log("login_success", action.payload.user)
 			return {
 				...state,
 				isAuthenticated: true,
@@ -137,19 +136,23 @@ function AuthProvider({ children }) {
 
 		initialize()
 	}, [])
+
 	useEffect(() => {
 		if (updatedProfile)
 			dispatch({ type: UPDATE_PROFILE, payload: updatedProfile })
 	}, [updatedProfile])
-	const login = async ({ email, password }, callback) => {
-		const response = await apiService.post("/auth/login", { email, password })
-		const { user, accessToken } = response.data.data
 
-		setSession(accessToken)
-		dispatch({
-			type: LOGIN_SUCCESS,
-			payload: { user },
-		})
+	const login = async ({ email, password }, callback) => {
+		try {
+			const response = await apiService.post("/auth/login", { email, password })
+			const { user, accessToken } = response.data.data
+
+			setSession(accessToken)
+			dispatch({
+				type: LOGIN_SUCCESS,
+				payload: { user },
+			})
+		} catch (error) {}
 	}
 
 	const register = async ({ name, email, password }, callback) => {

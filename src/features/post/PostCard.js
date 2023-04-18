@@ -29,9 +29,12 @@ import * as Yup from "yup"
 import { createPost, deletePost, editPost } from "./postSlice"
 import { LoadingButton } from "@mui/lab"
 import { reset } from "numeral"
+import AlertDialog from "../../components/AlertDialog"
 
 function PostCard({ post }) {
 	const { user } = useAuth()
+	const [openDialog, setOpenDialog] = useState(false)
+
 	const userId = user._id
 	console.log("post shit", post)
 	const [anchorEl, setAnchorEl] = useState(null)
@@ -49,10 +52,14 @@ function PostCard({ post }) {
 		setToggleEdit(!toggleEdit)
 		setAnchorEl(null)
 	}
-	const handleDeletePost = (postId) => {
-		dispatch(deletePost(postId)).then(() => handleMenuClose())
+	const handleDeleteButton = () => {
+		setOpenDialog(!openDialog)
 	}
 
+	const handleDelete = (postId) => {
+		dispatch(deletePost(postId)).then(() => handleMenuClose())
+		setOpenDialog(false)
+	}
 	const yupSchema = Yup.object().shape({
 		content: Yup.string().required("Content is required"),
 	})
@@ -149,7 +156,7 @@ function PostCard({ post }) {
 									onClose={handleMenuClose}
 								>
 									<MenuItem onClick={handleEditButton}>Edit</MenuItem>
-									<MenuItem onClick={() => handleDeletePost(post._id)}>
+									<MenuItem onClick={() => handleDeleteButton(post._id)}>
 										Delete
 									</MenuItem>
 								</Menu>
@@ -233,7 +240,13 @@ function PostCard({ post }) {
 						<img src={post.image} alt="post" />
 					</Box>
 				)}
-
+				<AlertDialog
+					open={openDialog}
+					handleClose={() => setOpenDialog(!openDialog)}
+					handleDelete={() => handleDelete(post._id)}
+					title="Delete Post"
+					description="Are you sure you want to delete this post? This action cannot be undone."
+				/>
 				<PostReaction post={post} />
 				<CommentList postId={post._id} />
 				<CommentForm postId={post._id} />

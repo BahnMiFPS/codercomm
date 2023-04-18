@@ -1,10 +1,28 @@
-import React from "react"
-import { Avatar, Box, Paper, Stack, Typography } from "@mui/material"
+import React, { useState } from "react"
+import { Avatar, Box, Button, Paper, Stack, Typography } from "@mui/material"
 import { fDate } from "../../utils/formatTime"
 import CommentReaction from "./CommentReaction"
+import useAuth from "../../hooks/useAuth"
+import AlertDialog from "../../components/AlertDialog"
+import { deleteComment } from "./commentSlice"
+import { useDispatch, useSelector } from "react-redux"
+import { LoadingButton } from "@mui/lab"
 // import CommentReaction from "./CommentReaction"
 
-function CommentCard({ comment }) {
+function CommentCard({ comment, postId }) {
+	const { user } = useAuth()
+	const dispatch = useDispatch()
+	const userId = user._id
+	const { isLoading } = useSelector((state) => state.comment)
+
+	const [openDialog, setOpenDialog] = useState(false)
+	const handleDeleteButton = () => {
+		setOpenDialog(!openDialog)
+	}
+	const handleDelete = (commentId) => {
+		dispatch(deleteComment(commentId, postId))
+		setOpenDialog(false)
+	}
 	return (
 		<Stack direction="row" spacing={2}>
 			<Avatar alt={comment.author?.name} src={comment.author?.avatarUrl} />
@@ -25,9 +43,27 @@ function CommentCard({ comment }) {
 				<Typography variant="body2" sx={{ color: "text.secondary" }}>
 					{comment.content}
 				</Typography>
-				<Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+				<Box sx={{ display: "flex", justifyContent: "flex-end", gap: 3 }}>
 					<CommentReaction comment={comment} />
+					{userId === comment.author._id ? (
+						<LoadingButton
+							variant="text"
+							onClick={handleDeleteButton}
+							loading={isLoading}
+						>
+							Delete
+						</LoadingButton>
+					) : (
+						<></>
+					)}
 				</Box>
+				<AlertDialog
+					open={openDialog}
+					handleClose={() => setOpenDialog(!openDialog)}
+					handleDelete={() => handleDelete(comment._id)}
+					title="Delete Comment"
+					description="Are you sure you want to delete this comment? This action cannot be undone."
+				/>
 			</Paper>
 		</Stack>
 	)

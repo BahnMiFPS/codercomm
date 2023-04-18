@@ -10,6 +10,7 @@ const initialState = {
 	currentPageUsers: [],
 	usersById: {},
 	totalPages: 1,
+	totalUsers: 0,
 }
 
 const slice = createSlice({
@@ -48,7 +49,7 @@ const slice = createSlice({
 			state.totalPages = totalPages
 		},
 
-		getFriendRequestSuccess(state, action) {
+		getIncomingFriendRequestSuccess(state, action) {
 			state.isLoading = false
 			state.error = null
 
@@ -56,6 +57,16 @@ const slice = createSlice({
 			users.forEach((user) => (state.usersById[user._id] = user))
 			state.currentPageUsers = users.map((user) => user._id)
 			state.totalUsers = count
+			state.totalPages = totalPages
+		},
+		getOutgoingFriendsSuccess(state, action) {
+			state.isLoading = false
+			state.error = null
+			const { users, count, totalPages } = action.payload
+			users.forEach((user) => (state.usersById[user._id] = user))
+			state.currentPageUsers = users.map((user) => user._id)
+			state.totalUsers = count
+
 			state.totalPages = totalPages
 		},
 
@@ -127,7 +138,7 @@ export const getFriends =
 		}
 	}
 
-export const getFriendRequests =
+export const getIncomingFriendRequests =
 	({ filterName, page = 1, limit = 12 }) =>
 	async (dispatch) => {
 		dispatch(slice.actions.startLoading())
@@ -138,6 +149,23 @@ export const getFriendRequests =
 				params,
 			})
 			dispatch(slice.actions.getFriendsSuccess(response.data.data))
+		} catch (error) {
+			dispatch(slice.actions.hasError(error.message))
+			toast.error(error.message)
+		}
+	}
+
+export const getOutgoingFriendRequests =
+	({ filterName, page = 1, limit = 12 }) =>
+	async (dispatch) => {
+		dispatch(slice.actions.startLoading())
+		try {
+			const params = { page, limit }
+			if (filterName) params.name = filterName
+			const response = await apiService.get("/friends/requests/outgoing", {
+				params,
+			})
+			dispatch(slice.actions.getOutgoingFriendsSuccess(response.data.data))
 		} catch (error) {
 			dispatch(slice.actions.hasError(error.message))
 			toast.error(error.message)
