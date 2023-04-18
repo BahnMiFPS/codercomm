@@ -30,43 +30,38 @@ function OutgoingFriendRequest() {
 		dispatch(getOutgoingFriendRequests({ filterName, page }))
 	}, [filterName, page, dispatch])
 	return (
-		<Container>
-			<Typography variant="h4" sx={{ mb: 3 }}>
-				Outgoing
-			</Typography>
-			<Card sx={{ p: 3 }}>
-				<Stack spacing={2}>
-					<Stack direction={{ xs: "column", md: "row" }} alignItems="center">
-						<SearchInput handleSubmit={handleSubmit} />
-						<Box sx={{ flexGrow: 1 }} />
-						<Typography
-							variant="subtitle"
-							sx={{ color: "text.secondary", ml: 1 }}
-						>
-							{totalUsers > 1
-								? `${totalUsers} requests found`
-								: totalUsers === 1
-								? `${totalUsers} request found`
-								: "No request found"}
-						</Typography>
+		<Card sx={{ p: 3 }}>
+			<Stack spacing={2}>
+				<Stack direction={{ xs: "column", md: "row" }} alignItems="center">
+					<SearchInput handleSubmit={handleSubmit} />
+					<Box sx={{ flexGrow: 1 }} />
+					<Typography
+						variant="subtitle"
+						sx={{ color: "text.secondary", ml: 1 }}
+					>
+						{totalUsers > 1
+							? `${totalUsers} requests found`
+							: totalUsers === 1
+							? `${totalUsers} request found`
+							: "No request found"}
+					</Typography>
 
-						<Pagination
-							count={totalPages}
-							page={page}
-							onChange={(e, page) => setPage(page)}
-						/>
-					</Stack>
+					<Pagination
+						count={totalPages}
+						page={page}
+						onChange={(e, page) => setPage(page)}
+					/>
 				</Stack>
+			</Stack>
 
-				<Grid container spacing={3} my={1}>
-					{users.map((user) => (
-						<Grid key={user._id} item xs={12} md={4}>
-							<UserCard profile={user} />
-						</Grid>
-					))}
-				</Grid>
-			</Card>
-		</Container>
+			<Grid container spacing={3} my={1}>
+				{users.map((user) => (
+					<Grid key={user._id} item xs={12} md={4}>
+						<UserCard profile={user} />
+					</Grid>
+				))}
+			</Grid>
+		</Card>
 	)
 }
 

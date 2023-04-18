@@ -148,7 +148,9 @@ export const getIncomingFriendRequests =
 			const response = await apiService.get("/friends/requests/incoming", {
 				params,
 			})
-			dispatch(slice.actions.getFriendsSuccess(response.data.data))
+			dispatch(
+				slice.actions.getIncomingFriendRequestSuccess(response.data.data)
+			)
 		} catch (error) {
 			dispatch(slice.actions.hasError(error.message))
 			toast.error(error.message)

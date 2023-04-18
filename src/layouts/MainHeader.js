@@ -105,7 +105,9 @@ function MainHeader() {
 								</Typography>
 							</MenuItem>
 							<Divider />
-							<MenuItem onClick={handleMenuClose}>Profile</MenuItem>
+							<MenuItem onClick={handleMenuClose} component={RouterLink} to="/">
+								Profile
+							</MenuItem>
 							<MenuItem
 								onClick={handleMenuClose}
 								component={RouterLink}
